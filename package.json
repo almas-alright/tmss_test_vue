@@ -1,0 +1,24 @@
+{
+  "name": "tmss-test-assignment",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/auth": "^4.9.1",
+    "@nuxtjs/axios": "^5.13.1",
+    "bootstrap": "^4.6.0",
+    "bootstrap-vue": "^2.21.2",
+    "core-js": "^3.15.1",
+    "js-cookie": "^3.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "nuxt": "^2.15.7",
+    "v-select2-component": "^0.4.7"
+  },
+  "devDependencies": {}
+}
