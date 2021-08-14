@@ -1,34 +1,27 @@
 <template>
   <div>
-    <b-modal id="students-modal" onclose="resetForm()" no-close-on-backdrop hide-backdrop content-class="shadow" :title="modalTitle">
+    <b-modal id="results-modal" onclose="resetForm()" no-close-on-backdrop hide-backdrop content-class="shadow" :title="modalTitle">
 
       <div role="group">
         <label for="input-live">Name:</label>
-        <b-form-input
-          id="input-live"
-          v-model="student.name"
-          :state="hasError(lv_errors, 'name')"
-          aria-describedby="input-live-help input-live-feedback"
-          placeholder="Enter Student name"
-          trim
-        ></b-form-input>
-        <div class="invalid-feedback" v-if="lv_errors.name">{{ lv_errors.name[0] }}</div>
+        <Select2 v-model="result.student_id" :options="u_students" :settings="{ multiple:false, maximumSelectionLength:3 }" placeholder="select student"/>
+        <div class="invalid-feedback" v-if="lv_errors.student_id">{{ lv_errors.student_id[0] }}</div>
 
       </div>
       <div role="group">
-        <label>Department:</label>
-          <Select2 v-model="student.department_id" :options="departments" :settings="{ multiple:false, maximumSelectionLength:3 }" placeholder="select department"/>
+        <label>Gpa: {{ result.gpa }}</label>
+        <b-form-input v-model="result.gpa" type="range" min="0" max="5" step="0.1"></b-form-input>
       </div>
       <div class="text-danger" v-if="lv_errors.department_id">{{ lv_errors.department_id[0] }}</div>
       <div role="group">
-        <label>Batch:</label>
-        <Select2 v-model="student.batch_id" :options="batches" :settings="{ multiple:false, maximumSelectionLength:3 }" placeholder="select batch"/>
+        <label>Published:</label>
+        <b-form-datepicker v-model="result.published" id="datepicker-sm" size="sm" locale="en" class="mb-2"></b-form-datepicker>
       </div>
       <div class="text-danger" v-if="lv_errors.batch_id">{{ lv_errors.batch_id[0] }}</div>
       <template v-slot:modal-footer>
-        <b-button class="mt-3" @click="$bvModal.hide('students-modal')" size="sm">cancel</b-button>
-        <b-button v-if="edit" class="mt-3" @click="updateStudent(student_id)" size="sm" variant="info">update</b-button>
-        <b-button v-if="!edit" class="mt-3" @click="storeStudent()" size="sm" variant="success">save</b-button>
+        <b-button class="mt-3" @click="$bvModal.hide('results-modal')" size="sm">cancel</b-button>
+        <b-button v-if="edit" class="mt-3" @click="updateResult(result_id)" size="sm" variant="info">update</b-button>
+        <b-button v-if="!edit" class="mt-3" @click="storeResult()" size="sm" variant="success">save</b-button>
       </template>
 
     </b-modal>
@@ -42,8 +35,8 @@ export default {
   name: "ManageStudent",
   data(){
     return {
-      student_id:null,
-      student:{ name:null, department_id:null, batch_id:null },
+      result_id:null,
+      result:{ student_id:null, gpa:0, published:null },
       edit:false,
       modalTitle: '',
     }
@@ -53,49 +46,49 @@ export default {
   methods:{
     getStudent(id){
       let that = this;
-      this.$axios.get('/students/'+id).then((response) =>{
+      this.$axios.get('/results/'+id).then((response) =>{
         let data = response.data.data
-        that.student.name = data.name
-        that.student.department_id = data.department_id
-        that.student.batch_id = data.batch_id
+        that.result.student_id = data.student_id
+        that.result.gpa = data.gpa
+        that.result.published = data.published
       })
     },
-    deleteStudent(id){
+    deleteResult(id){
       let that = this;
-      this.$axios.delete('/students/'+id).then((response) =>{
+      this.$axios.delete('/results/'+id).then((response) =>{
         if(response.data.success){
           that.$emit('managed')
         }
       })
     },
-    createStudent(){
+    createResult(){
       this.edit = false
       this.modalTitle = 'Create Student'
-      this.$bvModal.show('students-modal')
+      this.$bvModal.show('results-modal')
     },
-    storeStudent(){
+    storeResult(){
       let that = this;
-      this.$axios.post('/students', that.student).then((response) =>{
+      this.$axios.post('/results', that.result).then((response) =>{
         if(response.data.success){
-          that.$bvModal.hide('students-modal')
+          that.$bvModal.hide('results-modal')
           that.$emit('managed')
         }
       }).catch((e)=>{
 
       })
     },
-    editStudent(id){
+    editResult(id){
       this.getStudent(id)
-      this.student_id = id
+      this.result_id = id
       this.edit = true
       this.modalTitle = 'Edit Student'
-      this.$bvModal.show('students-modal')
+      this.$bvModal.show('results-modal')
     },
-    updateStudent(id){
+    updateResult(id){
       let that = this;
-      this.$axios.patch('/students/'+id, that.student).then((response) =>{
+      this.$axios.patch('/results/'+id, that.result).then((response) =>{
         if(response.data.success){
-          that.$bvModal.hide('students-modal')
+          that.$bvModal.hide('results-modal')
           that.$emit('managed')
         }
       }).catch((e)=>{
@@ -103,17 +96,18 @@ export default {
       })
     },
     resetForm(){
-      this.student_id = null
+      this.result_id = null
       this.edit = false
       this.modalTitle = ''
-      this.student.name = null
+      this.result.student_id = null
+      this.result.gpa = null
+      this.result.published = null
       this.$store.commit('clearErrors');
     }
   },
   created(){
-    this.loadBatches()
+    this.loadStudents()
     this.loadDepartments()
-    this.loadGpa()
   }
 }
 </script>

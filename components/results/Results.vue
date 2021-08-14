@@ -4,24 +4,12 @@
     <b-container class="bv-example-row">
       <b-row>
         <b-col>
-          <b-form-input size="sm" v-model="filters.name" placeholder="name"></b-form-input>
+          <Select2 v-model="filters.student" :options="u_students" :settings="{ multiple:false, maximumSelectionLength:3 }" @change="getResults()" placeholder="select student"/>
         </b-col>
         <b-col>
           <Select2 v-model="filters.department" :options="departments" :settings="{ multiple:false, maximumSelectionLength:3 }" @change="getResults()" placeholder="select department"/>
         </b-col>
         <b-col>
-          <Select2 v-model="filters.batch" :options="batches" :settings="{ multiple:false, maximumSelectionLength:3 }" @change="getResults()" placeholder="select batch"/>
-        </b-col>
-        <b-col cols="1">
-          <b-form-input v-model="filters.gpa_min" type="range" min="0" max="5" step="0.1"></b-form-input>
-          min gpa : {{ filters.gpa_min }}
-        </b-col>
-
-        <b-col cols="1">
-          <b-form-input v-model="filters.gpa_max" type="range" min="0" max="5" step="0.1"></b-form-input>
-          max gpa : {{ filters.gpa_max }}
-        </b-col>
-        <b-col cols="2">
           <b-form-select v-model="filters.gpa" :options="gpa_options" size="sm"></b-form-select>
         </b-col>
         <b-col>
@@ -32,6 +20,9 @@
     </b-container>
 
     <b-table striped hover :items="results" :fields="fields">
+      <template v-slot:cell(published)="items">
+        {{ items.value | dateFormat }}
+      </template>
       <template v-slot:cell(id)="items">
         <b-button squared size="sm" variant="outline-danger" @click="res_delete(items.value)" >delete</b-button>
         <b-button squared size="sm" variant="outline-info" @click="edit(items.value)">edit</b-button>
@@ -52,11 +43,8 @@ export default {
     return {
       results:[],
       filters:{
-        name:null,
-        batch:null,
+        student:null,
         department:null,
-        gpa_max:null,
-        gpa_min:null,
         gpa:null
       },
       fields:[
@@ -78,29 +66,26 @@ export default {
       })
     },
     resetList(){
-      this.filters.name = null,
-      this.filters.batch = null,
+      this.filters.student = null,
       this.filters.department = null,
-      this.filters.gpa_max = null,
-      this.filters.gpa_min = null,
       this.filters.gpa = null
       this.getResults()
     },
     create(){
-      this.$refs.manResult.createStudent()
+      this.$refs.manResult.createResult()
     },
 
     edit(id){
-      this.$refs.manResult.editStudent(id)
+      this.$refs.manResult.editResult(id)
     },
 
     res_delete(id){
-      this.$refs.manResult.deleteStudent(id)
+      this.$refs.manResult.deleteResult(id)
     }
   },
   created(){
     this.getResults();
-    this.loadBatches()
+    this.loadStudents()
     this.loadDepartments()
     this.loadGpa()
   }

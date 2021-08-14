@@ -7,6 +7,7 @@
         <b-nav-item v-if="authenticated" :to="{ name: 'department' }">Department</b-nav-item>
         <b-nav-item v-if="authenticated" :to="{ name: 'batch' }">Batch</b-nav-item>
         <b-nav-item v-if="authenticated" :to="{ name: 'student' }">Student</b-nav-item>
+        <b-nav-item v-if="authenticated" :to="{ name: 'result' }">Result</b-nav-item>
 
         <!-- Navbar dropdowns -->
 
