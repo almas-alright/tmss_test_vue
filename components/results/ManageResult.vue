@@ -1,23 +1,25 @@
 <template>
   <div>
     <b-modal id="results-modal" onclose="resetForm()" no-close-on-backdrop hide-backdrop content-class="shadow" :title="modalTitle">
-
       <div role="group">
         <label for="input-live">Name:</label>
         <Select2 v-model="result.student_id" :options="u_students" :settings="{ multiple:false, maximumSelectionLength:3 }" placeholder="select student"/>
-        <div class="invalid-feedback" v-if="lv_errors.student_id">{{ lv_errors.student_id[0] }}</div>
-
       </div>
+
       <div role="group">
         <label>Gpa: {{ result.gpa }}</label>
         <b-form-input v-model="result.gpa" type="range" min="0" max="5" step="0.1"></b-form-input>
       </div>
-      <div class="text-danger" v-if="lv_errors.department_id">{{ lv_errors.department_id[0] }}</div>
+
+
       <div role="group">
         <label>Published:</label>
         <b-form-datepicker v-model="result.published" id="datepicker-sm" size="sm" locale="en" class="mb-2"></b-form-datepicker>
       </div>
-      <div class="text-danger" v-if="lv_errors.batch_id">{{ lv_errors.batch_id[0] }}</div>
+      <br><br>
+      <div class="text-danger" v-if="lv_errors.gpa">{{ lv_errors.gpa[0] }}</div>
+      <div class="text-danger" v-if="lv_errors.published">{{ lv_errors.published[0] }}</div>
+      <div class="text-danger" v-if="lv_errors.student_id">{{ lv_errors.student_id[0] }}</div>
       <template v-slot:modal-footer>
         <b-button class="mt-3" @click="$bvModal.hide('results-modal')" size="sm">cancel</b-button>
         <b-button v-if="edit" class="mt-3" @click="updateResult(result_id)" size="sm" variant="info">update</b-button>
@@ -35,7 +37,7 @@ export default {
   name: "ManageStudent",
   data(){
     return {
-      result_id:null,
+      result_id: null,
       result:{ student_id:null, gpa:0, published:null },
       edit:false,
       modalTitle: '',
@@ -70,8 +72,8 @@ export default {
       let that = this;
       this.$axios.post('/results', that.result).then((response) =>{
         if(response.data.success){
-          that.$bvModal.hide('results-modal')
           that.$emit('managed')
+          this.$bvModal.hide('results-modal')
         }
       }).catch((e)=>{
 
@@ -88,8 +90,8 @@ export default {
       let that = this;
       this.$axios.patch('/results/'+id, that.result).then((response) =>{
         if(response.data.success){
-          that.$bvModal.hide('results-modal')
           that.$emit('managed')
+          this.$bvModal.hide('results-modal')
         }
       }).catch((e)=>{
 
@@ -100,9 +102,9 @@ export default {
       this.edit = false
       this.modalTitle = ''
       this.result.student_id = null
-      this.result.gpa = null
+      this.result.gpa = 0
       this.result.published = null
-      this.$store.commit('clearErrors');
+      this.$store.commit('validation/SET_VALIDATION_ERRORS', {});
     }
   },
   created(){

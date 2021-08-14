@@ -104,7 +104,7 @@ export default {
       this.edit = false
       this.modalTitle = ''
       this.department.name = null
-      this.$store.dispatch('validation/clearErrors');
+      this.$store.commit('validation/SET_VALIDATION_ERRORS', {});
     }
   },
   created(){

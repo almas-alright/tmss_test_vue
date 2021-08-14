@@ -107,7 +107,7 @@ export default {
       this.edit = false
       this.modalTitle = ''
       this.student.name = null
-      this.$store.commit('clearErrors');
+      this.$store.commit('validation/SET_VALIDATION_ERRORS', {});
     }
   },
   created(){

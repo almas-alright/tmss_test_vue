@@ -10,7 +10,7 @@
           <Select2 v-model="filters.department" :options="departments" :settings="{ multiple:false, maximumSelectionLength:3 }" @change="getResults()" placeholder="select department"/>
         </b-col>
         <b-col>
-          <b-form-select v-model="filters.gpa" :options="gpa_options" size="sm"></b-form-select>
+          <b-form-select v-model="filters.gpa" :options="gpa_options" @change="getResults()" size="sm"></b-form-select>
         </b-col>
         <b-col>
           <b-button size="sm" variant="info" @click="getResults()">filter</b-button>
